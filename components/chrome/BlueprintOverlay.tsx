@@ -13,8 +13,6 @@ export function BlueprintOverlay({ progress }: { progress: number }) {
         <span>SCROLL VECTOR</span>
         <strong>{Math.round(progress * 100).toString().padStart(3, "0")} / 100</strong>
       </div>
-      <div className="measurement-rule horizontal" />
-      <div className="measurement-rule vertical" />
       <div className="signal-feed">
         <p>render.pipeline: webgl</p>
         <p>motion.driver: gsap.scrolltrigger</p>
