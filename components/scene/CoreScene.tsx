@@ -1,10 +1,9 @@
 "use client";
 
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Billboard, ContactShadows, Environment, Float, MeshTransmissionMaterial, PerspectiveCamera, Text } from "@react-three/drei";
-import { Suspense, useMemo, useRef } from "react";
+import { ContactShadows, Environment, Float, PerspectiveCamera } from "@react-three/drei";
+import { Suspense, useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
-import { skills } from "@/data/portfolio";
 import { useAdaptiveQuality } from "@/hooks/useAdaptiveQuality";
 import { useMouseVector } from "@/hooks/useMouseVector";
 
@@ -12,6 +11,71 @@ type CoreSceneProps = {
   progress: number;
   hoveredSkill: string | null;
 };
+
+const SCENE_STACK_LABELS = [
+  { name: "C++", tone: "silver" },
+  { name: "C", tone: "silver" },
+  { name: "Python", tone: "blue" },
+  { name: "JavaScript", tone: "green" },
+  { name: "TypeScript", tone: "silver" },
+  { name: "React.js", tone: "blue" },
+  { name: "Next.js", tone: "silver" },
+  { name: "GSAP", tone: "green" },
+  { name: "Tailwind CSS", tone: "blue" },
+  { name: "Node.js", tone: "green" },
+  { name: "Spring Boot", tone: "green" },
+  { name: "PostgreSQL", tone: "blue" },
+  { name: "MySQL", tone: "silver" },
+  { name: "Azure", tone: "blue" },
+  { name: "Docker", tone: "green" },
+  { name: "Kubernetes", tone: "blue" },
+  { name: "Git", tone: "silver" },
+  { name: "GitHub", tone: "blue" },
+  { name: "GitLab", tone: "green" },
+  { name: "OS", tone: "silver" },
+  { name: "DBMS", tone: "blue" },
+  { name: "OOP", tone: "green" },
+  { name: "Networks", tone: "silver" }
+] as const;
+
+function stackColor(tone: (typeof SCENE_STACK_LABELS)[number]["tone"]) {
+  if (tone === "green") return "#00ff41";
+  if (tone === "blue") return "#0072c6";
+  return "#f3f7ff";
+}
+
+function createStackLabelTexture(label: string) {
+  const canvas = document.createElement("canvas");
+  const context = canvas.getContext("2d");
+  const width = 512;
+  const height = 160;
+
+  canvas.width = width;
+  canvas.height = height;
+
+  if (context) {
+    context.clearRect(0, 0, width, height);
+    context.font = "800 42px Inter, -apple-system, BlinkMacSystemFont, sans-serif";
+    context.textAlign = "center";
+    context.textBaseline = "middle";
+    context.shadowColor = "rgba(0, 114, 198, 0.72)";
+    context.shadowBlur = 18;
+    context.lineWidth = 8;
+    context.strokeStyle = "rgba(3, 3, 3, 0.96)";
+    context.strokeText(label, width / 2, height / 2);
+    context.fillStyle = "#f6fbff";
+    context.fillText(label, width / 2, height / 2);
+  }
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.minFilter = THREE.LinearFilter;
+  texture.magFilter = THREE.LinearFilter;
+  texture.generateMipmaps = false;
+  texture.needsUpdate = true;
+
+  return texture;
+}
 
 export function CoreScene({ progress, hoveredSkill }: CoreSceneProps) {
   const quality = useAdaptiveQuality();
@@ -29,7 +93,7 @@ export function CoreScene({ progress, hoveredSkill }: CoreSceneProps) {
         <ambientLight intensity={0.34} />
         <pointLight position={[4, 3, 5]} color="#0072c6" intensity={quality.isCompact ? 20 : 32} />
         <pointLight position={[-3, -1.5, 3]} color="#00ff41" intensity={quality.isCompact ? 6 : 9} />
-        <SceneRig progress={progress} hoveredSkill={hoveredSkill} segments={quality.segments} samples={quality.transmissionSamples} />
+        <SceneRig progress={progress} hoveredSkill={hoveredSkill} segments={quality.segments} />
         {quality.shadows ? <ContactShadows position={[0, -2.8, 0]} opacity={0.32} scale={8} blur={2.7} far={5} /> : null}
         {!quality.isCompact ? <Environment preset="city" /> : null}
       </Suspense>
@@ -40,11 +104,9 @@ export function CoreScene({ progress, hoveredSkill }: CoreSceneProps) {
 function SceneRig({
   progress,
   hoveredSkill,
-  segments,
-  samples
+  segments
 }: CoreSceneProps & {
   segments: number;
-  samples: number;
 }) {
   const group = useRef<THREE.Group>(null);
   const mouse = useMouseVector();
@@ -62,7 +124,7 @@ function SceneRig({
   return (
     <group ref={group}>
       <BlueprintRings progress={progress} />
-      <CoreShell progress={progress} hoveredSkill={hoveredSkill} segments={segments} samples={samples} />
+      <CoreShell progress={progress} hoveredSkill={hoveredSkill} segments={segments} />
       <OrbitingSkills progress={progress} hoveredSkill={hoveredSkill} />
       <DataPillar progress={progress} />
       <HologramViewport progress={progress} />
@@ -74,11 +136,9 @@ function SceneRig({
 function CoreShell({
   progress,
   hoveredSkill,
-  segments,
-  samples
+  segments
 }: CoreSceneProps & {
   segments: number;
-  samples: number;
 }) {
   const shell = useRef<THREE.Mesh>(null);
   const ringA = useRef<THREE.Mesh>(null);
@@ -111,20 +171,17 @@ function CoreShell({
     <Float speed={1.2} rotationIntensity={0.18} floatIntensity={0.24}>
       <mesh ref={shell}>
         <icosahedronGeometry args={[1.22, segments]} />
-        <MeshTransmissionMaterial
-          backside
-          samples={samples}
-          thickness={0.38}
-          roughness={0.08}
-          transmission={0.82}
-          chromaticAberration={0.08}
-          anisotropicBlur={0.18}
+        <meshPhysicalMaterial
           color="#d9f0ff"
-          attenuationColor="#0072c6"
-          attenuationDistance={1.5}
-          distortion={0.16 + explode * 0.2}
-          distortionScale={0.2}
-          temporalDistortion={0.12}
+          emissive="#0072c6"
+          emissiveIntensity={0.18 + explode * 0.32}
+          metalness={0.16}
+          roughness={0.09}
+          transmission={0.58}
+          thickness={0.52}
+          ior={1.42}
+          transparent
+          opacity={0.68}
         />
       </mesh>
       <mesh scale={1.236}>
@@ -181,38 +238,47 @@ function CoreShell({
 }
 
 function OrbitingSkills({ progress, hoveredSkill }: CoreSceneProps) {
-  const visible = THREE.MathUtils.smoothstep(progress, 0.28, 0.42) * (1 - THREE.MathUtils.smoothstep(progress, 0.68, 0.78));
+  const visible = THREE.MathUtils.smoothstep(progress, 0.24, 0.38) * (1 - THREE.MathUtils.smoothstep(progress, 0.66, 0.76));
   const group = useRef<THREE.Group>(null);
+  const labelTextures = useMemo(
+    () => SCENE_STACK_LABELS.map((skill) => ({ ...skill, texture: createStackLabelTexture(skill.name) })),
+    []
+  );
+
+  useEffect(() => {
+    return () => {
+      labelTextures.forEach((skill) => skill.texture.dispose());
+    };
+  }, [labelTextures]);
 
   useFrame((state) => {
     if (!group.current) return;
     group.current.rotation.y = state.clock.elapsedTime * 0.12;
-    group.current.visible = visible > 0.03;
+    group.current.visible = visible > 0.01;
   });
 
   return (
     <group ref={group} scale={visible}>
-      {skills.map((skill, index) => {
-        const angle = (index / skills.length) * Math.PI * 2;
+      {labelTextures.map((skill, index) => {
+        const angle = (index / labelTextures.length) * Math.PI * 2;
         const radius = 2.4 + (index % 2) * 0.45;
         const glow = hoveredSkill === skill.name ? 2.6 : 0.7;
+        const labelWidth = Math.min(0.9, 0.34 + skill.name.length * 0.035);
         return (
           <group key={skill.name} position={[Math.cos(angle) * radius, Math.sin(index) * 0.54, Math.sin(angle) * radius]}>
             <mesh>
               <sphereGeometry args={[0.105, 18, 18]} />
               <meshStandardMaterial
-                color={skill.tone === "green" ? "#00ff41" : skill.tone === "blue" ? "#0072c6" : "#f3f7ff"}
+                color={stackColor(skill.tone)}
                 emissive={skill.tone === "green" ? "#00ff41" : "#0072c6"}
                 emissiveIntensity={glow}
                 metalness={0.5}
                 roughness={0.18}
               />
             </mesh>
-            <Billboard position={[0, -0.28, 0]} follow>
-              <Text fontSize={0.12} color="#f6fbff" anchorX="center" anchorY="middle" outlineWidth={0.002} outlineColor="#030303">
-                {skill.name}
-              </Text>
-            </Billboard>
+            <sprite position={[0, -0.31, 0]} scale={[labelWidth, 0.24, 1]}>
+              <spriteMaterial map={skill.texture} transparent depthWrite={false} opacity={0.92} />
+            </sprite>
           </group>
         );
       })}

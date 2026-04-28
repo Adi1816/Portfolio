@@ -23,9 +23,9 @@ export function useAdaptiveQuality(): QualityProfile {
 
   return {
     isCompact,
-    dpr: isCompact ? [1, 1.2] : [1, 1.8],
-    segments: isCompact ? 2 : 4,
-    shadows: !isCompact,
-    transmissionSamples: isCompact ? 3 : 6
+    dpr: isCompact ? [1, 1] : [1, 1.25],
+    segments: isCompact ? 1 : 3,
+    shadows: false,
+    transmissionSamples: isCompact ? 2 : 3
   };
 }

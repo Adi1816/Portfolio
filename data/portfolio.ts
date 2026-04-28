@@ -23,6 +23,8 @@ export type ExperienceItem = {
   title: string;
   details: string;
   metric: string;
+  stack: string[];
+  signal: string;
 };
 
 export type ProjectLink = {
@@ -154,7 +156,9 @@ export const experience: ExperienceItem[] = [
     title: "Backend refactor and streaming integration",
     details:
       "Refactored OSDMC backend flows and delivered a Kafka-WebSocket integration with a 100% bug-free handoff signal.",
-    metric: "100% bug-free integration"
+    metric: "100% bug-free integration",
+    stack: ["Java", "Spring Boot", "Kafka", "WebSocket", "OSDMC"],
+    signal: "Enterprise backend reliability"
   },
   {
     company: "DocuSign",
@@ -163,7 +167,9 @@ export const experience: ExperienceItem[] = [
     title: "Identity verification and delivery acceleration",
     details:
       "Built Azure DevOps delivery improvements and OTP-based identity verification, reducing deployment time by 20%.",
-    metric: "20% faster deployments"
+    metric: "20% faster deployments",
+    stack: ["Azure DevOps", "OTP", "Identity", "CI/CD"],
+    signal: "Delivery acceleration"
   },
   {
     company: "TLE Eliminators",
@@ -172,7 +178,9 @@ export const experience: ExperienceItem[] = [
     title: "Mathematics for competitive programming",
     details:
       "Delivered expert instruction to 200+ beginners, strengthening number theory, combinatorics, and problem-solving foundations for Codeforces growth.",
-    metric: "40% rating enhancement"
+    metric: "40% rating enhancement",
+    stack: ["Number Theory", "Combinatorics", "Codeforces", "Teaching"],
+    signal: "Competitive programming pedagogy"
   }
 ];
 
@@ -187,12 +195,12 @@ export const projects: Project[] = [
       "Interview preparation is usually unstructured: candidates practice answers, but do not get consistent scoring, live transcripts, or actionable performance reports.",
     media: [
       {
-        src: "/projects/ai-mock-interview-01.png",
+        src: "/projects/ai-mock-interview-01.jpg",
         alt: "AI Mock Interview landing page with AI interview preparation hero and feature cards",
         label: "Landing Surface"
       },
       {
-        src: "/projects/ai-mock-interview-02.png",
+        src: "/projects/ai-mock-interview-02.jpg",
         alt: "AI Mock Interview dashboard with previous mock interviews and create interview panel",
         label: "Dashboard Flow"
       }
@@ -222,12 +230,12 @@ export const projects: Project[] = [
       "API testing often drifts away from the contract: teams need tests grounded in the uploaded OpenAPI or Swagger document and backed by reproducible execution evidence.",
     media: [
       {
-        src: "/projects/specpilot-01.png",
+        src: "/projects/specpilot-01.jpg",
         alt: "SpecPilot product page showing the contract-grounded API testing copilot and workflow object",
         label: "Hero System"
       },
       {
-        src: "/projects/specpilot-02.png",
+        src: "/projects/specpilot-02.jpg",
         alt: "SpecPilot workflow page showing flight path steps and Aditya Srivastava attribution panel",
         label: "Flight Path"
       }
@@ -257,12 +265,12 @@ export const projects: Project[] = [
       "New college students often have small but persistent doubts that are hard to answer from formal documents or scattered senior advice.",
     media: [
       {
-        src: "/projects/freshers-guide-01.png",
+        src: "/projects/freshers-guide-01.jpg",
         alt: "Fresher's Guide landing page with BIT Mesra campus hero and welcome message",
         label: "Campus Hero"
       },
       {
-        src: "/projects/freshers-guide-02.png",
+        src: "/projects/freshers-guide-02.jpg",
         alt: "Fresher's Guide coding and inner exploration section with dark editorial layout",
         label: "Guide Modules"
       }
@@ -293,12 +301,12 @@ export const projects: Project[] = [
       "Scholars working with Indian poetic forms need tooling that can convert text into matra-aware structure, making rhythm and composition easier to analyze at scale.",
     media: [
       {
-        src: "/projects/text2mantra-01.png",
+        src: "/projects/text2mantra-01.jpg",
         alt: "Centre for Computational Poetics homepage with poetic banner and research focus panels",
         label: "Research Home"
       },
       {
-        src: "/projects/text2mantra-02.png",
+        src: "/projects/text2mantra-02.jpg",
         alt: "Centre for Computational Poetics contact page with BIT Mesra campus image and contact form",
         label: "Centre Surface"
       }

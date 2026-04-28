@@ -20,8 +20,9 @@ export default function Image() {
           justifyContent: "space-between",
           padding: 64,
           color: "white",
-          background:
-            "radial-gradient(circle at 68% 42%, rgba(0,114,198,0.45), transparent 280px), radial-gradient(circle at 35% 60%, rgba(0,255,65,0.18), transparent 220px), #030303",
+          backgroundColor: "#030303",
+          backgroundImage:
+            "radial-gradient(circle at 68% 42%, rgba(0,114,198,0.45), transparent 280px), radial-gradient(circle at 35% 60%, rgba(0,255,65,0.18), transparent 220px)",
           fontFamily: "Inter, Arial, sans-serif"
         }}
       >
@@ -29,8 +30,8 @@ export default function Image() {
           <span>System Architecture</span>
           <span>Bangalore, India</span>
         </div>
-        <div>
-          <div style={{ fontSize: 108, fontWeight: 800, letterSpacing: -3, lineHeight: 0.9 }}>{siteProfile.name}</div>
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          <div style={{ fontSize: 108, fontWeight: 800, letterSpacing: 0, lineHeight: 0.9 }}>{siteProfile.name}</div>
           <div style={{ marginTop: 28, fontSize: 34, color: "#dce6f0" }}>{siteProfile.title}</div>
         </div>
         <div style={{ display: "flex", gap: 18, fontSize: 24, color: "#00ff41" }}>

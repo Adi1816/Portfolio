@@ -4,9 +4,39 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteProfile.siteUrl),
+  applicationName: `${siteProfile.name} Portfolio`,
   title: `${siteProfile.name} | Software Development Engineer`,
   description:
     "A cinematic scrollytelling portfolio for Aditya Srivastava, Software Development Engineer and System Architect.",
+  keywords: [
+    "Aditya Srivastava",
+    "Software Development Engineer",
+    "System Architect",
+    "Oracle OSDMC",
+    "Next.js",
+    "Spring Boot",
+    "Competitive Programming",
+    "Codeforces Expert",
+    "AI Mock Interview",
+    "SpecPilot"
+  ],
+  authors: [{ name: siteProfile.name, url: siteProfile.siteUrl }],
+  creator: siteProfile.name,
+  publisher: siteProfile.name,
+  category: "portfolio",
+  alternates: {
+    canonical: "/"
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1
+    }
+  },
   openGraph: {
     title: `${siteProfile.name} | Software Development Engineer`,
     description: "Luxury-tech portfolio showcasing systems, backend architecture, AI projects, and product engineering.",
@@ -31,7 +61,8 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: "/favicon.svg"
-  }
+  },
+  manifest: "/manifest.webmanifest"
 };
 
 export default function RootLayout({

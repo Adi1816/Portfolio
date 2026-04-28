@@ -27,18 +27,15 @@ export function PortfolioExperience() {
   const progress = useScrollProgress();
   const reduceMotion = useReducedMotion();
   const [hoveredSkill, setHoveredSkill] = useState<string | null>(null);
-  const stackRevealFocus = progress > 0.36 && progress < 0.51 ? 1 : 0;
-  const showcaseFocus = progress > 0.74 && progress < 0.9 ? 0.78 : 0;
-  const sceneFocus = Math.max(stackRevealFocus, showcaseFocus);
+  const sceneIsClear = (progress >= 0.365 && progress < 0.515) || (progress >= 0.755 && progress < 0.885);
   const progressStyle = useMemo(
     () =>
       ({
-        "--page-progress": progress,
-        "--scene-blur": `${3.2 - sceneFocus * 3.2}px`,
-        "--scene-opacity": 0.54 + sceneFocus * 0.42,
-        "--scene-saturate": 0.82 + sceneFocus * 0.36
+        "--scene-blur": sceneIsClear ? "0px" : "2.2px",
+        "--scene-opacity": sceneIsClear ? 0.94 : 0.5,
+        "--scene-saturate": sceneIsClear ? 1.08 : 0.78
       }) as React.CSSProperties,
-    [progress, sceneFocus]
+    [sceneIsClear]
   );
 
   return (
