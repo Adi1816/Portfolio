@@ -18,7 +18,9 @@ import { ExperienceSection } from "@/components/sections/ExperienceSection";
 import { ProjectsSection } from "@/components/sections/ProjectsSection";
 import { FooterSection } from "@/components/sections/FooterSection";
 
-const CoreScene = dynamic(() => import("@/components/scene/CoreScene").then((mod) => mod.CoreScene), {
+const loadCoreScene = () => import("@/components/scene/CoreScene").then((mod) => mod.CoreScene);
+
+const CoreScene = dynamic(loadCoreScene, {
   ssr: false,
   loading: () => <StaticCore />
 });
@@ -45,6 +47,16 @@ function shouldPreferStaticCore() {
   return isCompact && (saveData || lowMemory || lowCoreCount);
 }
 
+function requestIdleWork(task: () => void, timeout = 1200) {
+  if ("requestIdleCallback" in window) {
+    const idleId = window.requestIdleCallback(task, { timeout });
+    return () => window.cancelIdleCallback(idleId);
+  }
+
+  const timer = globalThis.setTimeout(task, 1);
+  return () => globalThis.clearTimeout(timer);
+}
+
 export function PortfolioExperience() {
   const progress = useScrollProgress();
   const reduceMotion = useReducedMotion();
@@ -66,7 +78,7 @@ export function PortfolioExperience() {
   );
 
   useEffect(() => {
-    if (reduceMotion) {
+    if (reduceMotion || isSceneReady) {
       return;
     }
 
@@ -75,24 +87,31 @@ export function PortfolioExperience() {
     }
 
     const isCompact = window.matchMedia("(max-width: 760px), (pointer: coarse)").matches;
-    const delay = isCompact ? 1800 : 1100;
-    let idleId: number | null = null;
-    const timer = window.setTimeout(() => {
-      if ("requestIdleCallback" in window) {
-        idleId = window.requestIdleCallback(() => setIsSceneReady(true), { timeout: 1200 });
-        return;
-      }
+    const scrollDepth = window.scrollY / Math.max(window.innerHeight, 1);
+    const shouldPreloadMobileScene = isCompact && scrollDepth >= 0.9;
+    const shouldMountMobileScene = isCompact && (scrollDepth >= 1.25 || showcaseSceneFocus);
+    const shouldMountDesktopScene = !isCompact;
 
-      setIsSceneReady(true);
+    if (shouldPreloadMobileScene) {
+      loadCoreScene();
+    }
+
+    if (!shouldMountDesktopScene && !shouldMountMobileScene) {
+      return;
+    }
+
+    const delay = isCompact ? 120 : 1000;
+    let cleanupIdle: (() => void) | null = null;
+    const timer = window.setTimeout(() => {
+      const cancelIdle = requestIdleWork(() => setIsSceneReady(true), isCompact ? 700 : 1200);
+      cleanupIdle = cancelIdle;
     }, delay);
 
     return () => {
       window.clearTimeout(timer);
-      if (idleId !== null && "cancelIdleCallback" in window) {
-        window.cancelIdleCallback(idleId);
-      }
+      cleanupIdle?.();
     };
-  }, [reduceMotion]);
+  }, [isSceneReady, progress, reduceMotion, showcaseSceneFocus]);
 
   useEffect(() => {
     const aura = cursorAuraRef.current;

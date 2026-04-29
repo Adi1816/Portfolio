@@ -1,8 +1,7 @@
 "use client";
 
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { ContactShadows, Environment, Float, PerspectiveCamera } from "@react-three/drei";
-import { Suspense, useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import { useAdaptiveQuality } from "@/hooks/useAdaptiveQuality";
 import { useMouseVector } from "@/hooks/useMouseVector";
@@ -72,22 +71,19 @@ export function CoreScene({ progress, hoveredSkill, isActive }: CoreSceneProps) 
 
   return (
     <Canvas
+      camera={{ position: [0, 0.2, quality.isCompact ? 8.4 : 7.2], fov: quality.isCompact ? 48 : 42 }}
       dpr={quality.dpr}
       frameloop={isActive ? "always" : "demand"}
       gl={{ antialias: !quality.isCompact, alpha: true, powerPreference: "high-performance" }}
       className="core-canvas"
     >
-      <PerspectiveCamera makeDefault position={[0, 0.2, quality.isCompact ? 8.4 : 7.2]} fov={quality.isCompact ? 48 : 42} />
-      <Suspense fallback={null}>
-        <color attach="background" args={["#030303"]} />
-        <fog attach="fog" args={["#030303", 8, 18]} />
-        <ambientLight intensity={0.34} />
-        <pointLight position={[4, 3, 5]} color="#0072c6" intensity={quality.isCompact ? 20 : 32} />
-        <pointLight position={[-3, -1.5, 3]} color="#00ff41" intensity={quality.isCompact ? 6 : 9} />
-        <SceneRig progress={progress} hoveredSkill={hoveredSkill} isActive={isActive} segments={quality.segments} />
-        {quality.shadows ? <ContactShadows position={[0, -2.8, 0]} opacity={0.32} scale={8} blur={2.7} far={5} /> : null}
-        {!quality.isCompact ? <Environment preset="city" /> : null}
-      </Suspense>
+      <color attach="background" args={["#030303"]} />
+      <fog attach="fog" args={["#030303", 8, 18]} />
+      <ambientLight intensity={quality.isCompact ? 0.42 : 0.36} />
+      <pointLight position={[4, 3, 5]} color="#0072c6" intensity={quality.isCompact ? 20 : 32} />
+      <pointLight position={[-3, -1.5, 3]} color="#00ff41" intensity={quality.isCompact ? 6 : 9} />
+      <pointLight position={[0, 2.6, 3.8]} color="#ffffff" intensity={quality.isCompact ? 3 : 5} />
+      <SceneRig progress={progress} hoveredSkill={hoveredSkill} isActive={isActive} segments={quality.segments} />
     </Canvas>
   );
 }
@@ -168,7 +164,7 @@ function CoreShell({
   });
 
   return (
-    <Float speed={1.2} rotationIntensity={0.18} floatIntensity={0.24}>
+    <group>
       <mesh ref={shell}>
         <icosahedronGeometry args={[1.22, segments]} />
         <meshPhysicalMaterial
@@ -233,7 +229,7 @@ function CoreShell({
           </mesh>
         );
       })}
-    </Float>
+    </group>
   );
 }
 

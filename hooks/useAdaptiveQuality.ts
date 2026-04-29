@@ -6,8 +6,6 @@ export type QualityProfile = {
   isCompact: boolean;
   dpr: [number, number];
   segments: number;
-  shadows: boolean;
-  transmissionSamples: number;
 };
 
 export function useAdaptiveQuality(): QualityProfile {
@@ -24,8 +22,6 @@ export function useAdaptiveQuality(): QualityProfile {
   return {
     isCompact,
     dpr: isCompact ? [1, 1] : [1, 1.25],
-    segments: isCompact ? 1 : 3,
-    shadows: false,
-    transmissionSamples: isCompact ? 2 : 3
+    segments: isCompact ? 1 : 3
   };
 }
