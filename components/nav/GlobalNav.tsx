@@ -9,9 +9,14 @@ export function GlobalNav({ progress }: { progress: number }) {
         <span>AS</span>
         <strong>System Architecture</strong>
       </a>
-      <div className="nav-stages" aria-hidden="true">
+      <div className="nav-stages" aria-label="Career stage navigation">
         {stages.map((stage, index) => (
-          <a className={index === activeIndex ? "active" : ""} href={`#${stage.id}`} key={stage.id}>
+          <a
+            aria-current={index === activeIndex ? "location" : undefined}
+            className={index === activeIndex ? "active" : ""}
+            href={`#${stage.id}`}
+            key={stage.id}
+          >
             {stage.label}
           </a>
         ))}

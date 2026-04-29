@@ -57,13 +57,14 @@ export function CommandLauncher() {
         type="button"
       >
         {isOpen ? <X size={16} /> : <Command size={16} />}
-        Launch
+        Recruiter Kit
       </button>
       <div
-        aria-hidden={!isOpen}
         aria-label="Launch command center"
         className="command-panel"
+        hidden={!isOpen}
         id="launch-command-panel"
+        inert={!isOpen ? true : undefined}
         role="dialog"
       >
         <div className="command-panel-head">

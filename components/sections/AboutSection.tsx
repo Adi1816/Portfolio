@@ -8,7 +8,7 @@ export function AboutSection() {
     <section className="story-section split-section" id="engine">
       <RevealText className="copy-block">
         <SectionEyebrow>Engine Room</SectionEyebrow>
-        <h2>Building Scalable Digital Ecosystems.</h2>
+        <h2>Scalable systems, engineered from first principles.</h2>
         <p>
           From BIT Mesra to Oracle, Aditya builds with the discipline of Computer Science and the instinct of a systems thinker.
           The foundation is precise: CGPA 8.71, hardened through algorithms, backend architecture, and product-grade execution.

@@ -8,7 +8,7 @@ import { projects } from "@/data/portfolio";
 import { RevealText } from "@/components/primitives/RevealText";
 import { SectionEyebrow } from "@/components/primitives/SectionEyebrow";
 
-const projectThemes = ["#8b5cf6", "#0072c6", "#00ff41", "#f6f8fb"];
+const projectThemes = ["#0072c6", "#8b5cf6", "#ff312e", "#f7c948"];
 
 function ProjectShowcase() {
   const [activeProject, setActiveProject] = useState(0);
@@ -18,8 +18,23 @@ function ProjectShowcase() {
   const selectedProject = projects[activeProject];
   const projectCount = projects.length;
 
+  function selectProject(index: number, syncHash = true) {
+    setActiveProject(index);
+
+    if (syncHash) {
+      const slug = projects[index]?.slug;
+      if (slug) {
+        window.history.replaceState(null, "", `#${slug}`);
+      }
+    }
+  }
+
   function moveProject(direction: -1 | 1) {
-    setActiveProject((current) => (current + direction + projectCount) % projectCount);
+    setActiveProject((current) => {
+      const next = (current + direction + projectCount) % projectCount;
+      window.history.replaceState(null, "", `#${projects[next].slug}`);
+      return next;
+    });
   }
 
   useEffect(() => {
@@ -29,6 +44,22 @@ function ProjectShowcase() {
       inline: "nearest"
     });
   }, [activeProject]);
+
+  useEffect(() => {
+    const hydrateFromHash = () => {
+      const slug = window.location.hash.replace("#", "");
+      const projectIndex = projects.findIndex((project) => project.slug === slug);
+
+      if (projectIndex >= 0) {
+        selectProject(projectIndex, false);
+        document.getElementById("showcase")?.scrollIntoView({ block: "start" });
+      }
+    };
+
+    hydrateFromHash();
+    window.addEventListener("hashchange", hydrateFromHash);
+    return () => window.removeEventListener("hashchange", hydrateFromHash);
+  }, []);
 
   useEffect(() => {
     if (!previewImage) return;
@@ -53,7 +84,7 @@ function ProjectShowcase() {
             <button
               className={activeProject === index ? "project-rail-card active" : "project-rail-card"}
               key={project.name}
-              onClick={() => setActiveProject(index)}
+              onClick={() => selectProject(index)}
               ref={(node) => {
                 projectButtonRefs.current[index] = node;
               }}
@@ -77,7 +108,7 @@ function ProjectShowcase() {
                 aria-pressed={activeProject === index}
                 className={activeProject === index ? "active" : ""}
                 key={project.name}
-                onClick={() => setActiveProject(index)}
+                onClick={() => selectProject(index)}
                 type="button"
               />
             ))}
@@ -99,6 +130,7 @@ function ProjectShowcase() {
             exit={{ opacity: 0, y: -14, filter: "blur(8px)" }}
             initial={{ opacity: 0, y: 18, filter: "blur(10px)" }}
             key={selectedProject.name}
+            id={selectedProject.slug}
             transition={{ duration: 0.34, ease: [0.16, 1, 0.3, 1] }}
           >
             <div className="case-meta-row">
@@ -229,7 +261,7 @@ export function ProjectsSection() {
     <section className="story-section projects-section" id="showcase">
       <RevealText className="copy-block">
         <SectionEyebrow>Feature Showcase</SectionEyebrow>
-        <h2>Product surfaces built like instruments.</h2>
+        <h2>Product systems, built to be inspected.</h2>
       </RevealText>
       <ProjectShowcase />
     </section>

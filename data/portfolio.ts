@@ -39,6 +39,7 @@ export type ProjectMedia = {
 };
 
 export type Project = {
+  slug: string;
   name: string;
   stack: string;
   metric: string;
@@ -191,6 +192,7 @@ export const experience: ExperienceItem[] = [
 
 export const projects: Project[] = [
   {
+    slug: "ai-mock-interview",
     name: "AI Mock Interview",
     stack: "Next.js 14 + Gemini AI",
     metric: "500+ interviews processed",
@@ -231,6 +233,7 @@ export const projects: Project[] = [
     ]
   },
   {
+    slug: "specpilot",
     name: "SpecPilot",
     stack: "Next.js + GenAI + OpenAPI",
     metric: "Contract-grounded test handoff",
@@ -271,6 +274,7 @@ export const projects: Project[] = [
     ]
   },
   {
+    slug: "freshers-guide",
     name: "Fresher's Guide",
     stack: "HTML + CSS + JavaScript",
     metric: "College-life knowledge hub",
@@ -311,17 +315,18 @@ export const projects: Project[] = [
     ]
   },
   {
+    slug: "text2mantra",
     name: "Text2Mantra",
     stack: "Python + Poetic Structure Analysis",
     metric: "10,000+ words processed",
     signal: "Matra conversion, research tooling, academic impact",
     copy:
-      "A Python-based Text2Matra converter built with Prof. Niraj Kumar Singh for poetic structure analysis and research enablement.",
+      "A Python-based Text2Mantra converter built with Prof. Niraj Kumar Singh for poetic structure analysis and research enablement.",
     problem:
       "Scholars working with Indian poetic forms need tooling that can convert text into matra-aware structure, making rhythm and composition easier to analyze at scale.",
     role: "Research tooling engineer",
     challenge: "Convert poetic text into structure-aware matra signals while keeping the workflow useful for academic analysis.",
-    solution: "Engineered a Python processing pipeline for Text2Matra conversion and connected it to the Centre of Excellence initiative.",
+    solution: "Engineered a Python processing pipeline for Text2Mantra conversion and connected it to the Centre of Excellence initiative.",
     impact: "Processed 10,000+ words and supported academic pursuits for 1,000+ scholars and researchers.",
     proofPoints: ["10,000+ words processed", "Prof. Niraj Kumar Singh collaboration", "Centre of Excellence Lab"],
     media: [

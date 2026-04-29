@@ -213,10 +213,10 @@ export function SkillsSection({
       </div>
       <RevealText className="copy-block">
         <SectionEyebrow>Tech Stack Explosion</SectionEyebrow>
-        <h2>Interactive stack field.</h2>
+        <h2>Systems stack, exposed.</h2>
         <p>
-          Languages, frameworks, backend systems, cloud platforms, coursework, and competitive profiles assembled into one
-          active engineering field.
+          Languages, frameworks, backend systems, cloud platforms, coursework, and competitive profiles assembled into a
+          live engineering field.
         </p>
       </RevealText>
 

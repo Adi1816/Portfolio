@@ -11,9 +11,13 @@ export function FooterSection() {
   const [copied, setCopied] = useState(false);
 
   async function copyEmail() {
-    await navigator.clipboard.writeText(siteProfile.email);
-    setCopied(true);
-    window.setTimeout(() => setCopied(false), 1600);
+    try {
+      await navigator.clipboard.writeText(siteProfile.email);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1600);
+    } catch {
+      window.location.href = `mailto:${siteProfile.email}`;
+    }
   }
 
   return (
