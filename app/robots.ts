@@ -1,12 +1,14 @@
 import type { MetadataRoute } from "next";
-import { siteProfile } from "@/data/portfolio";
+import { getSiteUrl } from "./seo";
 
 export default function robots(): MetadataRoute.Robots {
+  const siteUrl = getSiteUrl();
+
   return {
     rules: {
       userAgent: "*",
       allow: "/"
     },
-    sitemap: `${siteProfile.siteUrl}/sitemap.xml`
+    sitemap: `${siteUrl}/sitemap.xml`
   };
 }

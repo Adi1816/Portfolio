@@ -10,32 +10,22 @@ import { useMouseVector } from "@/hooks/useMouseVector";
 type CoreSceneProps = {
   progress: number;
   hoveredSkill: string | null;
+  isActive: boolean;
 };
 
 const SCENE_STACK_LABELS = [
   { name: "C++", tone: "silver" },
-  { name: "C", tone: "silver" },
   { name: "Python", tone: "blue" },
-  { name: "JavaScript", tone: "green" },
   { name: "TypeScript", tone: "silver" },
   { name: "React.js", tone: "blue" },
   { name: "Next.js", tone: "silver" },
-  { name: "GSAP", tone: "green" },
-  { name: "Tailwind CSS", tone: "blue" },
   { name: "Node.js", tone: "green" },
   { name: "Spring Boot", tone: "green" },
   { name: "PostgreSQL", tone: "blue" },
-  { name: "MySQL", tone: "silver" },
-  { name: "Azure", tone: "blue" },
   { name: "Docker", tone: "green" },
   { name: "Kubernetes", tone: "blue" },
-  { name: "Git", tone: "silver" },
-  { name: "GitHub", tone: "blue" },
-  { name: "GitLab", tone: "green" },
-  { name: "OS", tone: "silver" },
-  { name: "DBMS", tone: "blue" },
-  { name: "OOP", tone: "green" },
-  { name: "Networks", tone: "silver" }
+  { name: "Codeforces", tone: "green" },
+  { name: "LeetCode", tone: "blue" }
 ] as const;
 
 function stackColor(tone: (typeof SCENE_STACK_LABELS)[number]["tone"]) {
@@ -47,20 +37,20 @@ function stackColor(tone: (typeof SCENE_STACK_LABELS)[number]["tone"]) {
 function createStackLabelTexture(label: string) {
   const canvas = document.createElement("canvas");
   const context = canvas.getContext("2d");
-  const width = 512;
-  const height = 160;
+  const width = 320;
+  const height = 96;
 
   canvas.width = width;
   canvas.height = height;
 
   if (context) {
     context.clearRect(0, 0, width, height);
-    context.font = "800 42px Inter, -apple-system, BlinkMacSystemFont, sans-serif";
+    context.font = "800 30px Inter, -apple-system, BlinkMacSystemFont, sans-serif";
     context.textAlign = "center";
     context.textBaseline = "middle";
     context.shadowColor = "rgba(0, 114, 198, 0.72)";
-    context.shadowBlur = 18;
-    context.lineWidth = 8;
+    context.shadowBlur = 10;
+    context.lineWidth = 5;
     context.strokeStyle = "rgba(3, 3, 3, 0.96)";
     context.strokeText(label, width / 2, height / 2);
     context.fillStyle = "#f6fbff";
@@ -77,12 +67,13 @@ function createStackLabelTexture(label: string) {
   return texture;
 }
 
-export function CoreScene({ progress, hoveredSkill }: CoreSceneProps) {
+export function CoreScene({ progress, hoveredSkill, isActive }: CoreSceneProps) {
   const quality = useAdaptiveQuality();
 
   return (
     <Canvas
       dpr={quality.dpr}
+      frameloop={isActive ? "always" : "demand"}
       gl={{ antialias: !quality.isCompact, alpha: true, powerPreference: "high-performance" }}
       className="core-canvas"
     >
@@ -93,7 +84,7 @@ export function CoreScene({ progress, hoveredSkill }: CoreSceneProps) {
         <ambientLight intensity={0.34} />
         <pointLight position={[4, 3, 5]} color="#0072c6" intensity={quality.isCompact ? 20 : 32} />
         <pointLight position={[-3, -1.5, 3]} color="#00ff41" intensity={quality.isCompact ? 6 : 9} />
-        <SceneRig progress={progress} hoveredSkill={hoveredSkill} segments={quality.segments} />
+        <SceneRig progress={progress} hoveredSkill={hoveredSkill} isActive={isActive} segments={quality.segments} />
         {quality.shadows ? <ContactShadows position={[0, -2.8, 0]} opacity={0.32} scale={8} blur={2.7} far={5} /> : null}
         {!quality.isCompact ? <Environment preset="city" /> : null}
       </Suspense>
@@ -104,6 +95,7 @@ export function CoreScene({ progress, hoveredSkill }: CoreSceneProps) {
 function SceneRig({
   progress,
   hoveredSkill,
+  isActive,
   segments
 }: CoreSceneProps & {
   segments: number;
@@ -114,6 +106,11 @@ function SceneRig({
 
   useFrame((state) => {
     if (!group.current) return;
+    if (!isActive) {
+      group.current.rotation.y = progress * Math.PI * 2.3;
+      return;
+    }
+
     const time = state.clock.elapsedTime;
     group.current.rotation.y = THREE.MathUtils.lerp(group.current.rotation.y, progress * Math.PI * 2.3 + mouse.current.x * 0.08, 0.05);
     group.current.rotation.x = THREE.MathUtils.lerp(group.current.rotation.x, -0.18 + mouse.current.y * 0.05, 0.05);
@@ -124,8 +121,8 @@ function SceneRig({
   return (
     <group ref={group}>
       <BlueprintRings progress={progress} />
-      <CoreShell progress={progress} hoveredSkill={hoveredSkill} segments={segments} />
-      <OrbitingSkills progress={progress} hoveredSkill={hoveredSkill} />
+      <CoreShell progress={progress} hoveredSkill={hoveredSkill} isActive={isActive} segments={segments} />
+      <OrbitingSkills progress={progress} hoveredSkill={hoveredSkill} isActive={isActive} />
       <DataPillar progress={progress} />
       <HologramViewport progress={progress} />
       <GridField progress={progress} />
@@ -136,6 +133,7 @@ function SceneRig({
 function CoreShell({
   progress,
   hoveredSkill,
+  isActive,
   segments
 }: CoreSceneProps & {
   segments: number;
@@ -152,6 +150,8 @@ function CoreShell({
   const chips = useMemo(() => Array.from({ length: 14 }, (_, index) => index), []);
 
   useFrame((state) => {
+    if (!isActive) return;
+
     const time = state.clock.elapsedTime;
     if (shell.current) {
       shell.current.rotation.z = time * 0.08;
@@ -237,7 +237,7 @@ function CoreShell({
   );
 }
 
-function OrbitingSkills({ progress, hoveredSkill }: CoreSceneProps) {
+function OrbitingSkills({ progress, hoveredSkill, isActive }: CoreSceneProps) {
   const visible = THREE.MathUtils.smoothstep(progress, 0.24, 0.38) * (1 - THREE.MathUtils.smoothstep(progress, 0.66, 0.76));
   const group = useRef<THREE.Group>(null);
   const labelTextures = useMemo(
@@ -253,7 +253,9 @@ function OrbitingSkills({ progress, hoveredSkill }: CoreSceneProps) {
 
   useFrame((state) => {
     if (!group.current) return;
-    group.current.rotation.y = state.clock.elapsedTime * 0.12;
+    if (isActive) {
+      group.current.rotation.y = state.clock.elapsedTime * 0.12;
+    }
     group.current.visible = visible > 0.01;
   });
 
@@ -261,13 +263,13 @@ function OrbitingSkills({ progress, hoveredSkill }: CoreSceneProps) {
     <group ref={group} scale={visible}>
       {labelTextures.map((skill, index) => {
         const angle = (index / labelTextures.length) * Math.PI * 2;
-        const radius = 2.4 + (index % 2) * 0.45;
+        const radius = 2.28 + (index % 2) * 0.34;
         const glow = hoveredSkill === skill.name ? 2.6 : 0.7;
-        const labelWidth = Math.min(0.9, 0.34 + skill.name.length * 0.035);
+        const labelWidth = Math.min(0.74, 0.28 + skill.name.length * 0.032);
         return (
           <group key={skill.name} position={[Math.cos(angle) * radius, Math.sin(index) * 0.54, Math.sin(angle) * radius]}>
             <mesh>
-              <sphereGeometry args={[0.105, 18, 18]} />
+              <sphereGeometry args={[0.096, 12, 12]} />
               <meshStandardMaterial
                 color={stackColor(skill.tone)}
                 emissive={skill.tone === "green" ? "#00ff41" : "#0072c6"}

@@ -1,7 +1,7 @@
 "use client";
 
 import type { CSSProperties, PointerEvent } from "react";
-import { useMemo, useState } from "react";
+import { memo, useCallback, useState } from "react";
 import { competitiveProfiles, skills } from "@/data/portfolio";
 import { RevealText } from "@/components/primitives/RevealText";
 import { SectionEyebrow } from "@/components/primitives/SectionEyebrow";
@@ -43,7 +43,9 @@ function buildStackOrbs(): StackOrb[] {
   ];
 }
 
-function StackOrbButton({
+const STACK_ORBS = buildStackOrbs();
+
+const StackOrbButton = memo(function StackOrbButton({
   item,
   index,
   isHighlighted,
@@ -106,7 +108,7 @@ function StackOrbButton({
       {content}
     </button>
   );
-}
+});
 
 export function SkillsSection({
   setHoveredSkill
@@ -114,21 +116,20 @@ export function SkillsSection({
   hoveredSkill: string | null;
   setHoveredSkill: (skill: string | null) => void;
 }) {
-  const stackOrbs = useMemo(() => buildStackOrbs(), []);
-  const [activeItem, setActiveItem] = useState<StackOrb>(stackOrbs[0]);
+  const [activeItem, setActiveItem] = useState<StackOrb>(STACK_ORBS[0]);
   const [highlightedItemId, setHighlightedItemId] = useState<string | null>(null);
   const [readoutTilt, setReadoutTilt] = useState({ x: 0, y: 0 });
 
-  function activate(item: StackOrb) {
+  const activate = useCallback((item: StackOrb) => {
     setActiveItem(item);
     setHighlightedItemId(item.id);
     setHoveredSkill(item.skillName ?? item.title);
-  }
+  }, [setHoveredSkill]);
 
-  function deactivate() {
+  const deactivate = useCallback(() => {
     setHighlightedItemId(null);
     setHoveredSkill(null);
-  }
+  }, [setHoveredSkill]);
 
   function tiltReadout(event: PointerEvent<HTMLDivElement>) {
     const rect = event.currentTarget.getBoundingClientRect();
@@ -154,7 +155,7 @@ export function SkillsSection({
 
       <div className="stack-lab">
         <div className="orb-field" aria-label="Interactive technology and competitive programming stack">
-          {stackOrbs.map((item, index) => (
+          {STACK_ORBS.map((item, index) => (
             <StackOrbButton
               index={index}
               item={item}

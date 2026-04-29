@@ -1,10 +1,12 @@
 import type { MetadataRoute } from "next";
-import { siteProfile } from "@/data/portfolio";
+import { getSiteUrl } from "./seo";
 
 export default function sitemap(): MetadataRoute.Sitemap {
+  const siteUrl = getSiteUrl();
+
   return [
     {
-      url: siteProfile.siteUrl,
+      url: siteUrl,
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 1

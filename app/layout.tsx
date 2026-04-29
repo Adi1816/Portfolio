@@ -1,29 +1,32 @@
 import type { Metadata } from "next";
 import { competitiveProfiles, projects, siteProfile, socialLinks } from "@/data/portfolio";
+import { getSiteUrl, seoDescription, seoKeywords } from "./seo";
 import "./globals.css";
 
+const siteUrl = getSiteUrl();
+const httpSocialLinks = socialLinks.filter((link) => link.href.startsWith("http")).map((link) => link.href);
+const projectLinks = projects.flatMap((project) => project.links.map((link) => link.href).filter((href) => href.startsWith("http")));
+const sameAs = Array.from(new Set([...httpSocialLinks, ...competitiveProfiles.map((profile) => profile.href), ...projectLinks]));
+
 export const metadata: Metadata = {
-  metadataBase: new URL(siteProfile.siteUrl),
+  metadataBase: new URL(siteUrl),
   applicationName: `${siteProfile.name} Portfolio`,
-  title: `${siteProfile.name} | Software Development Engineer`,
-  description:
-    "A cinematic scrollytelling portfolio for Aditya Srivastava, Software Development Engineer and System Architect.",
-  keywords: [
-    "Aditya Srivastava",
-    "Software Development Engineer",
-    "System Architect",
-    "Oracle OSDMC",
-    "Next.js",
-    "Spring Boot",
-    "Competitive Programming",
-    "Codeforces Expert",
-    "AI Mock Interview",
-    "SpecPilot"
-  ],
-  authors: [{ name: siteProfile.name, url: siteProfile.siteUrl }],
+  title: {
+    default: `${siteProfile.name} | Software Development Engineer`,
+    template: `%s | ${siteProfile.name}`
+  },
+  description: seoDescription,
+  keywords: seoKeywords,
+  authors: [{ name: siteProfile.name, url: siteUrl }],
   creator: siteProfile.name,
   publisher: siteProfile.name,
   category: "portfolio",
+  referrer: "origin-when-cross-origin",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false
+  },
   alternates: {
     canonical: "/"
   },
@@ -39,8 +42,8 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: `${siteProfile.name} | Software Development Engineer`,
-    description: "Luxury-tech portfolio showcasing systems, backend architecture, AI projects, and product engineering.",
-    url: siteProfile.siteUrl,
+    description: seoDescription,
+    url: siteUrl,
     siteName: `${siteProfile.name} Portfolio`,
     images: [
       {
@@ -56,11 +59,17 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: `${siteProfile.name} | Software Development Engineer`,
-    description: "Cinematic engineering portfolio for systems, AI products, and backend architecture.",
+    description: seoDescription,
     images: ["/opengraph-image"]
   },
+  appleWebApp: {
+    capable: true,
+    title: `${siteProfile.name} Portfolio`,
+    statusBarStyle: "black-translucent"
+  },
   icons: {
-    icon: "/favicon.svg"
+    icon: "/favicon.svg",
+    apple: "/favicon.svg"
   },
   manifest: "/manifest.webmanifest"
 };
@@ -81,17 +90,33 @@ export default function RootLayout({
               "@type": "Person",
               name: siteProfile.name,
               jobTitle: "Software Development Engineer",
+              description: seoDescription,
               email: siteProfile.email,
-              url: siteProfile.siteUrl,
+              url: siteUrl,
+              image: `${siteUrl}/opengraph-image`,
+              alumniOf: {
+                "@type": "CollegeOrUniversity",
+                name: "Birla Institute of Technology, Mesra"
+              },
+              worksFor: {
+                "@type": "Organization",
+                name: "Oracle"
+              },
+              knowsAbout: seoKeywords.filter((keyword) => keyword !== siteProfile.name && keyword !== "Aditya Srivastava portfolio"),
               address: {
                 "@type": "PostalAddress",
                 addressLocality: siteProfile.location
               },
-              sameAs: [
-                ...socialLinks.filter((link) => link.href.startsWith("http")).map((link) => link.href),
-                ...competitiveProfiles.map((profile) => profile.href),
-                ...projects.flatMap((project) => project.links.map((link) => link.href).filter((href) => href.startsWith("http")))
-              ]
+              sameAs,
+              hasCredential: [
+                "Codeforces Expert - 1749",
+                "LeetCode Knight - 1927",
+                "AtCoder 4 Star - 1700"
+              ],
+              mainEntityOfPage: {
+                "@type": "WebPage",
+                "@id": siteUrl
+              }
             })
           }}
         />
