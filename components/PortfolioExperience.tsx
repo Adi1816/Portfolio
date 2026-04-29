@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { useReducedMotion } from "framer-motion";
 import { CircuitBoard } from "lucide-react";
 import { memo, useEffect, useMemo, useRef, useState } from "react";
 import { useScrollProgress } from "@/hooks/useScrollProgress";
@@ -12,7 +13,9 @@ import { StageHud } from "@/components/nav/StageHud";
 import { StaticCore } from "@/components/scene/StaticCore";
 import { HeroSection } from "@/components/sections/HeroSection";
 import { AboutSection } from "@/components/sections/AboutSection";
+import { SkillsSection } from "@/components/sections/SkillsSection";
 import { ExperienceSection } from "@/components/sections/ExperienceSection";
+import { ProjectsSection } from "@/components/sections/ProjectsSection";
 import { FooterSection } from "@/components/sections/FooterSection";
 
 const loadCoreScene = () => import("@/components/scene/CoreScene").then((mod) => mod.CoreScene);
@@ -22,27 +25,13 @@ const CoreScene = dynamic(loadCoreScene, {
   loading: () => <StaticCore />
 });
 
-const DeferredSkillsSection = dynamic(
-  () => import("@/components/sections/SkillsSection").then((mod) => mod.SkillsSection),
-  {
-    ssr: false,
-    loading: () => <section className="story-section stack-section" id="stack" aria-label="Loading tech stack section" />
-  }
-);
-
-const DeferredProjectsSection = dynamic(
-  () => import("@/components/sections/ProjectsSection").then((mod) => mod.ProjectsSection),
-  {
-    ssr: false,
-    loading: () => <section className="story-section projects-section" id="showcase" aria-label="Loading project showcase" />
-  }
-);
-
 const MemoSystemLoader = memo(SystemLoader);
 const MemoCommandLauncher = memo(CommandLauncher);
 const MemoHeroSection = memo(HeroSection);
 const MemoAboutSection = memo(AboutSection);
+const MemoSkillsSection = memo(SkillsSection);
 const MemoExperienceSection = memo(ExperienceSection);
+const MemoProjectsSection = memo(ProjectsSection);
 const MemoFooterSection = memo(FooterSection);
 
 function shouldPreferStaticCore() {
@@ -68,29 +57,11 @@ function requestIdleWork(task: () => void, timeout = 1200) {
   return () => globalThis.clearTimeout(timer);
 }
 
-function usePrefersReducedMotion() {
-  const [reduceMotion, setReduceMotion] = useState(false);
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setReduceMotion(mediaQuery.matches);
-
-    const updatePreference = () => setReduceMotion(mediaQuery.matches);
-    mediaQuery.addEventListener("change", updatePreference);
-
-    return () => mediaQuery.removeEventListener("change", updatePreference);
-  }, []);
-
-  return reduceMotion;
-}
-
 export function PortfolioExperience() {
   const progress = useScrollProgress();
-  const reduceMotion = usePrefersReducedMotion();
+  const reduceMotion = useReducedMotion();
   const cursorAuraRef = useRef<HTMLDivElement>(null);
   const [isSceneReady, setIsSceneReady] = useState(false);
-  const [shouldRenderStack, setShouldRenderStack] = useState(false);
-  const [shouldRenderProjects, setShouldRenderProjects] = useState(false);
   const [hoveredSkill, setHoveredSkill] = useState<string | null>(null);
   const stackSceneFocus = progress >= 0.315 && progress < 0.455;
   const sceneIsClear = stackSceneFocus;
@@ -120,10 +91,9 @@ export function PortfolioExperience() {
     const scrollDepth = window.scrollY / Math.max(window.innerHeight, 1);
     const shouldPreloadMobileScene = isCompact && scrollDepth >= 0.9;
     const shouldMountMobileScene = isCompact && scrollDepth >= 1.25;
-    const shouldPreloadDesktopScene = !isCompact && progress >= 0.24;
-    const shouldMountDesktopScene = !isCompact && progress >= 0.28;
+    const shouldMountDesktopScene = !isCompact;
 
-    if (shouldPreloadMobileScene || shouldPreloadDesktopScene) {
+    if (shouldPreloadMobileScene) {
       loadCoreScene();
     }
 
@@ -131,7 +101,7 @@ export function PortfolioExperience() {
       return;
     }
 
-    const delay = isCompact ? 120 : 180;
+    const delay = isCompact ? 120 : 1000;
     let cleanupIdle: (() => void) | null = null;
     const timer = window.setTimeout(() => {
       const cancelIdle = requestIdleWork(() => setIsSceneReady(true), isCompact ? 700 : 1200);
@@ -143,23 +113,6 @@ export function PortfolioExperience() {
       cleanupIdle?.();
     };
   }, [isSceneReady, progress, reduceMotion]);
-
-  useEffect(() => {
-    if (shouldRenderStack && shouldRenderProjects) {
-      return;
-    }
-
-    const hash = window.location.hash.replace("#", "");
-    const projectHashes = new Set(["ai-mock-interview", "specpilot", "freshers-guide", "text2mantra"]);
-
-    if (!shouldRenderStack && (progress >= 0.16 || hash === "stack" || hash === "timeline" || projectHashes.has(hash))) {
-      setShouldRenderStack(true);
-    }
-
-    if (!shouldRenderProjects && (progress >= 0.58 || hash === "showcase" || projectHashes.has(hash))) {
-      setShouldRenderProjects(true);
-    }
-  }, [progress, shouldRenderProjects, shouldRenderStack]);
 
   useEffect(() => {
     const aura = cursorAuraRef.current;
@@ -227,18 +180,10 @@ export function PortfolioExperience() {
 
       <MemoHeroSection />
       <MemoAboutSection />
-      {shouldRenderStack ? (
-        <DeferredSkillsSection hoveredSkill={hoveredSkill} setHoveredSkill={setHoveredSkill} />
-      ) : (
-        <section className="story-section stack-section deferred-section-shell" id="stack" aria-hidden="true" />
-      )}
+      <MemoSkillsSection hoveredSkill={hoveredSkill} setHoveredSkill={setHoveredSkill} />
       <section className="stack-focus-gap" aria-hidden="true" />
       <MemoExperienceSection />
-      {shouldRenderProjects ? (
-        <DeferredProjectsSection />
-      ) : (
-        <section className="story-section projects-section deferred-section-shell" id="showcase" aria-hidden="true" />
-      )}
+      <MemoProjectsSection />
       <MemoFooterSection />
 
       <div className="reduced-motion-note">

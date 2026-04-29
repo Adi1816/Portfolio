@@ -125,10 +125,10 @@ function ProjectShowcase() {
       <RevealText className="project-case-study">
         <AnimatePresence mode="wait">
           <motion.div
-            animate={{ opacity: 1, y: 0 }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             className="case-reel"
-            exit={{ opacity: 0, y: -14 }}
-            initial={{ opacity: 0, y: 18 }}
+            exit={{ opacity: 0, y: -14, filter: "blur(8px)" }}
+            initial={{ opacity: 0, y: 18, filter: "blur(10px)" }}
             key={selectedProject.name}
             id={selectedProject.slug}
             transition={{ duration: 0.34, ease: [0.16, 1, 0.3, 1] }}

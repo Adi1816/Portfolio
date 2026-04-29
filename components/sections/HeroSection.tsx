@@ -1,19 +1,36 @@
+"use client";
+
+import { motion, useReducedMotion } from "framer-motion";
+import { useEffect, useState } from "react";
 import { SectionEyebrow } from "@/components/primitives/SectionEyebrow";
 
 function HeroTitle() {
   const words = ["ADITYA", "SRIVASTAVA"];
+  const prefersReducedMotion = useReducedMotion();
+  const [isHydrated, setIsHydrated] = useState(false);
+  const reduceMotion = isHydrated && prefersReducedMotion;
+
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
 
   return (
     <h1 className="hero-title" aria-label="Aditya Srivastava">
       {words.map((word, wordIndex) => (
         <span className="hero-word" aria-hidden="true" key={word}>
           {word.split("").map((letter, letterIndex) => (
-            <span
+            <motion.span
               key={`${word}-${letter}-${letterIndex}`}
-              style={{ "--letter-index": wordIndex * 7 + letterIndex } as React.CSSProperties}
+              initial={reduceMotion ? false : { opacity: 0, y: 34, filter: "blur(16px)" }}
+              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              transition={{
+                delay: reduceMotion ? 0 : 0.18 + (wordIndex * 7 + letterIndex) * 0.026,
+                duration: reduceMotion ? 0 : 0.74,
+                ease: [0.16, 1, 0.3, 1]
+              }}
             >
               {letter}
-            </span>
+            </motion.span>
           ))}
         </span>
       ))}
@@ -27,17 +44,29 @@ export function HeroSection() {
       <div className="copy-block hero-copy">
         <SectionEyebrow>Status: SDE at Oracle (OSDMC)</SectionEyebrow>
         <HeroTitle />
-        <p className="hero-subtitle hero-reveal" style={{ "--hero-delay": "0.68s" } as React.CSSProperties}>
+        <motion.p
+          className="hero-subtitle"
+          initial={{ opacity: 0, y: 18, filter: "blur(10px)" }}
+          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+          transition={{ delay: 0.68, duration: 0.72, ease: [0.16, 1, 0.3, 1] }}
+        >
           Software Development Engineer | System Architect
-        </p>
-        <p className="hero-offer hero-reveal" style={{ "--hero-delay": "0.76s" } as React.CSSProperties}>
+        </motion.p>
+        <motion.p
+          className="hero-offer"
+          initial={{ opacity: 0, y: 18, filter: "blur(10px)" }}
+          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+          transition={{ delay: 0.76, duration: 0.72, ease: [0.16, 1, 0.3, 1] }}
+        >
           FTE Offers from <span className="offer-brand flipkart">Flipkart</span>,{" "}
           <span className="offer-brand cisco">Cisco</span> and <span className="offer-brand oracle">Oracle</span>
-        </p>
-        <div
+        </motion.p>
+        <motion.div
           className="hero-signal-grid"
-          style={{ "--hero-delay": "0.84s" } as React.CSSProperties}
           aria-label="Career signal highlights"
+          initial={{ opacity: 0, y: 18, filter: "blur(10px)" }}
+          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+          transition={{ delay: 0.84, duration: 0.72, ease: [0.16, 1, 0.3, 1] }}
         >
           <span>
             <i>Current</i>
@@ -51,7 +80,7 @@ export function HeroSection() {
             <i>Product</i>
             <strong>AI + API Systems</strong>
           </span>
-        </div>
+        </motion.div>
       </div>
     </section>
   );
