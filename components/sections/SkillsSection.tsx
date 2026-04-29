@@ -82,6 +82,9 @@ function buildStackOrbs(): StackOrb[] {
 }
 
 const STACK_ORBS = buildStackOrbs();
+const STACK_LOGO_PRELOAD_SOURCES = Array.from(
+  new Set(STACK_ORBS.map((item) => item.logo?.src).filter((src): src is string => Boolean(src)))
+);
 
 function StackReadoutLogo({ item }: { item: StackOrb }) {
   const [hasLogoError, setHasLogoError] = useState(false);
@@ -107,7 +110,7 @@ function StackReadoutLogo({ item }: { item: StackOrb }) {
           key={logoSrc}
           alt=""
           decoding="async"
-          loading="lazy"
+          loading="eager"
           onError={() => setHasLogoError(true)}
           src={logoSrc}
         />
@@ -203,6 +206,11 @@ export function SkillsSection({
 
   return (
     <section className="story-section stack-section" id="stack">
+      <div className="stack-logo-preload" aria-hidden="true">
+        {STACK_LOGO_PRELOAD_SOURCES.map((src) => (
+          <img alt="" decoding="async" key={src} src={src} />
+        ))}
+      </div>
       <RevealText className="copy-block">
         <SectionEyebrow>Tech Stack Explosion</SectionEyebrow>
         <h2>Interactive stack field.</h2>

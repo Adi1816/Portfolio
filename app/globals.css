@@ -1006,6 +1006,21 @@ button {
   max-width: 1180px;
 }
 
+.stack-logo-preload {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.stack-logo-preload img {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+}
+
 .orb-field {
   position: relative;
   display: grid;
