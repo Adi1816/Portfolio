@@ -2550,8 +2550,12 @@ button {
   }
 
   .nav-brand {
-    justify-content: space-between;
+    justify-content: flex-start;
     padding-right: 0;
+  }
+
+  .nav-brand strong {
+    display: none;
   }
 
   .stage-hud {
@@ -2561,8 +2565,30 @@ button {
   }
 
   .command-launcher {
-    top: 122px;
+    top: 28px;
+    right: auto;
+    left: 66px;
+    z-index: 12;
+  }
+
+  .command-trigger {
+    min-height: 34px;
+    padding: 0 11px;
+    font-size: 0.72rem;
+  }
+
+  .command-trigger svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .command-panel {
+    position: fixed;
+    top: 78px;
     right: 16px;
+    left: 16px;
+    width: auto;
+    max-height: calc(100vh - 98px);
   }
 
   .story-section {
