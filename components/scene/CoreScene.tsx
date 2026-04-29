@@ -248,7 +248,9 @@ function CoreShell({
 }
 
 function OrbitingSkills({ progress, hoveredSkill, isActive }: CoreSceneProps) {
-  const visible = THREE.MathUtils.smoothstep(progress, 0.24, 0.38) * (1 - THREE.MathUtils.smoothstep(progress, 0.66, 0.76));
+  const visible = isActive
+    ? THREE.MathUtils.smoothstep(progress, 0.24, 0.38) * (1 - THREE.MathUtils.smoothstep(progress, 0.66, 0.76))
+    : 0;
   const group = useRef<THREE.Group>(null);
   const labelTextures = useMemo(
     () => SCENE_STACK_LABELS.map((skill) => ({ ...skill, texture: createStackLabelTexture(skill.name) })),

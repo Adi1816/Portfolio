@@ -9,7 +9,6 @@ import { SystemLoader } from "@/components/chrome/SystemLoader";
 import { BlueprintOverlay } from "@/components/chrome/BlueprintOverlay";
 import { CommandLauncher } from "@/components/chrome/CommandLauncher";
 import { GlobalNav } from "@/components/nav/GlobalNav";
-import { StageHud } from "@/components/nav/StageHud";
 import { StaticCore } from "@/components/scene/StaticCore";
 import { HeroSection } from "@/components/sections/HeroSection";
 import { AboutSection } from "@/components/sections/AboutSection";
@@ -62,12 +61,17 @@ export function PortfolioExperience() {
   const reduceMotion = useReducedMotion();
   const cursorAuraRef = useRef<HTMLDivElement>(null);
   const [isSceneReady, setIsSceneReady] = useState(false);
+  const [isCompactViewport, setIsCompactViewport] = useState(false);
+  const [mobileStackBeat, setMobileStackBeat] = useState({ focus: false, peeking: false });
   const [hoveredSkill, setHoveredSkill] = useState<string | null>(null);
-  const stackSceneFocus = progress >= 0.315 && progress < 0.455;
+  const desktopStackSceneFocus = progress >= 0.315 && progress < 0.455;
+  const stackSceneFocus = isCompactViewport ? mobileStackBeat.focus : desktopStackSceneFocus;
   const sceneIsClear = stackSceneFocus;
-  const sceneIsPeeking =
+  const desktopSceneIsPeeking =
     (progress >= 0.27 && progress < 0.315) ||
     (progress >= 0.455 && progress < 0.465);
+  const sceneIsPeeking = isCompactViewport ? mobileStackBeat.peeking && !mobileStackBeat.focus : desktopSceneIsPeeking;
+  const sceneProgress = isCompactViewport && mobileStackBeat.peeking ? 0.38 : progress;
   const progressStyle = useMemo(
     () =>
       ({
@@ -77,6 +81,42 @@ export function PortfolioExperience() {
       }) as React.CSSProperties,
     [sceneIsClear, sceneIsPeeking]
   );
+
+  useEffect(() => {
+    const compactQuery = window.matchMedia("(max-width: 760px), (pointer: coarse)");
+
+    const syncViewportMode = () => {
+      setIsCompactViewport(compactQuery.matches);
+    };
+
+    syncViewportMode();
+    compactQuery.addEventListener("change", syncViewportMode);
+
+    return () => compactQuery.removeEventListener("change", syncViewportMode);
+  }, []);
+
+  useEffect(() => {
+    if (!isCompactViewport) {
+      if (mobileStackBeat.focus || mobileStackBeat.peeking) {
+        setMobileStackBeat({ focus: false, peeking: false });
+      }
+
+      return;
+    }
+
+    const stackFocusGap = document.querySelector<HTMLElement>(".stack-focus-gap");
+
+    if (!stackFocusGap) {
+      return;
+    }
+
+    const rect = stackFocusGap.getBoundingClientRect();
+    const viewportHeight = window.innerHeight || 1;
+    const focus = rect.top < viewportHeight * 0.72 && rect.bottom > viewportHeight * 0.26;
+    const peeking = rect.top < viewportHeight * 0.98 && rect.bottom > viewportHeight * 0.08;
+
+    setMobileStackBeat((current) => (current.focus === focus && current.peeking === peeking ? current : { focus, peeking }));
+  }, [isCompactViewport, mobileStackBeat.focus, mobileStackBeat.peeking, progress]);
 
   useEffect(() => {
     if (reduceMotion || isSceneReady) {
@@ -170,12 +210,11 @@ export function PortfolioExperience() {
         {reduceMotion || !isSceneReady ? (
           <StaticCore />
         ) : (
-          <CoreScene progress={progress} hoveredSkill={hoveredSkill} isActive={sceneIsClear} />
+          <CoreScene progress={sceneProgress} hoveredSkill={hoveredSkill} isActive={sceneIsClear} />
         )}
       </div>
       <div className="cursor-aura" ref={cursorAuraRef} aria-hidden="true" />
       <BlueprintOverlay progress={progress} />
-      <StageHud progress={progress} />
       <MemoCommandLauncher />
 
       <MemoHeroSection />

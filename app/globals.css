@@ -2561,7 +2561,7 @@ button {
   }
 
   .command-launcher {
-    top: 90px;
+    top: 122px;
     right: 16px;
   }
 
@@ -2665,15 +2665,20 @@ button {
   }
 
   .stack-focus-gap {
-    min-height: 42vh;
+    min-height: 76vh;
+    margin-top: 4vh;
+  }
+
+  .stack-focus-gap::before {
+    inset: 8vh 18px;
   }
 
   .stack-focus-gap::after {
-    bottom: 8vh;
+    bottom: 11vh;
   }
 
   .stack-lab {
-    gap: 18px;
+    gap: 22px;
   }
 
   .orb-field {
@@ -2707,6 +2712,7 @@ button {
     padding: 22px;
     transform: none;
     backdrop-filter: none;
+    margin-top: 4px;
   }
 
   .stack-readout::before,
