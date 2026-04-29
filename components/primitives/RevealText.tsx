@@ -1,6 +1,5 @@
 "use client";
 
-import { motion, useInView, useReducedMotion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 
 export function RevealText({
@@ -15,25 +14,42 @@ export function RevealText({
   style?: React.CSSProperties;
 }) {
   const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, margin: "-12% 0px" });
-  const prefersReducedMotion = useReducedMotion();
-  const [isHydrated, setIsHydrated] = useState(false);
-  const reduceMotion = isHydrated && prefersReducedMotion;
+  const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    setIsHydrated(true);
+    const node = ref.current;
+
+    if (!node) {
+      return;
+    }
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || !("IntersectionObserver" in window)) {
+      setIsVisible(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "-12% 0px" }
+    );
+
+    observer.observe(node);
+
+    return () => observer.disconnect();
   }, []);
 
   return (
-    <motion.div
+    <div
       ref={ref}
-      className={className}
-      style={style}
-      initial={reduceMotion ? false : { opacity: 0, y: 34, filter: "blur(18px)" }}
-      animate={reduceMotion || isInView ? { opacity: 1, y: 0, filter: "blur(0px)" } : undefined}
-      transition={reduceMotion ? { duration: 0 } : { duration: 0.9, delay, ease: [0.16, 1, 0.3, 1] }}
+      className={`${className} reveal-text${isVisible ? " visible" : ""}`}
+      style={{ ...style, "--reveal-delay": `${delay}s` } as React.CSSProperties}
     >
       {children}
-    </motion.div>
+    </div>
   );
 }

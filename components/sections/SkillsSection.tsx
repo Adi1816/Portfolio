@@ -104,15 +104,17 @@ function StackReadoutLogo({ item }: { item: StackOrb }) {
   }, [item.id, logoSrc]);
 
   return (
-    <div className={`readout-logo ${item.tone}`} aria-label={logo?.label ?? `${item.title} symbol`} style={logoStyle}>
+    <div className={`readout-logo ${item.tone}`} aria-label={logo?.label ?? `${item.title} symbol`} role="img" style={logoStyle}>
       {logoSrc && !hasLogoError ? (
         <img
           key={logoSrc}
           alt=""
           decoding="async"
+          height={56}
           loading="eager"
           onError={() => setHasLogoError(true)}
           src={logoSrc}
+          width={56}
         />
       ) : null}
       <span className={logoSrc && !hasLogoError ? "logo-fallback hidden" : "logo-fallback"}>{initials}</span>
@@ -208,7 +210,7 @@ export function SkillsSection({
     <section className="story-section stack-section" id="stack">
       <div className="stack-logo-preload" aria-hidden="true">
         {STACK_LOGO_PRELOAD_SOURCES.map((src) => (
-          <img alt="" decoding="async" key={src} src={src} />
+          <img alt="" decoding="async" height={1} key={src} src={src} width={1} />
         ))}
       </div>
       <RevealText className="copy-block">

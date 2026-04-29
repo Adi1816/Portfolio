@@ -29,8 +29,8 @@ function ExperienceMark({ company }: { company: string }) {
         };
 
   return (
-    <div className={`experience-mark ${logo.className}`} aria-label={logo.label}>
-      <img alt="" decoding="async" loading="lazy" src={logo.src} />
+    <div className={`experience-mark ${logo.className}`} aria-label={logo.label} role="img">
+      <img alt="" decoding="async" height={86} loading="lazy" src={logo.src} width={178} />
     </div>
   );
 }
