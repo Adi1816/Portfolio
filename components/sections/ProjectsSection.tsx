@@ -130,6 +130,30 @@ function ProjectShowcase() {
               <p>{selectedProject.problem}</p>
             </div>
 
+            <div className="case-brief-grid" aria-label={`${selectedProject.name} case study brief`}>
+              <div>
+                <span>Role</span>
+                <strong>{selectedProject.role}</strong>
+              </div>
+              <div>
+                <span>Challenge</span>
+                <strong>{selectedProject.challenge}</strong>
+              </div>
+              <div>
+                <span>Solution</span>
+                <strong>{selectedProject.solution}</strong>
+              </div>
+              <div className="case-impact">
+                <span>Impact</span>
+                <strong>{selectedProject.impact}</strong>
+                <ul>
+                  {selectedProject.proofPoints.map((point) => (
+                    <li key={point}>{point}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
             <div className="case-detail-grid">
               <div>
                 <h4>Architecture</h4>

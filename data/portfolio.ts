@@ -45,6 +45,11 @@ export type Project = {
   copy: string;
   signal: string;
   problem: string;
+  role: string;
+  challenge: string;
+  solution: string;
+  impact: string;
+  proofPoints: string[];
   media: ProjectMedia[];
   architecture: string[];
   decisions: string[];
@@ -70,7 +75,7 @@ export const siteProfile = {
   title: "Software Development Engineer | System Architect",
   location: "Bangalore, India",
   email: "sriaditya16@gmail.com",
-  siteUrl: "https://adityasrivastava.dev",
+  siteUrl: "https://portfolio-omega-five-q0du9fmhnl.vercel.app",
   resumeHref: "https://drive.google.com/file/d/1zBbPLYJlFTyngobXBBWxughLH_HncRXT/view?usp=sharing"
 };
 
@@ -193,6 +198,11 @@ export const projects: Project[] = [
     copy: "A holographic interview platform that converts preparation into structured, AI-assisted feedback loops.",
     problem:
       "Interview preparation is usually unstructured: candidates practice answers, but do not get consistent scoring, live transcripts, or actionable performance reports.",
+    role: "Full-stack product engineer",
+    challenge: "Create a realistic practice loop without making the AI feel like an ungrounded chatbot.",
+    solution: "Built a guided interview flow with generated questions, live transcripts, rubric-style feedback, and session reports.",
+    impact: "Processed 500+ mock interviews and turned repeat practice into measurable candidate feedback.",
+    proofPoints: ["AI interviewer flow", "Live transcript surface", "Performance report loop"],
     media: [
       {
         src: "/projects/ai-mock-interview-01.jpg",
@@ -228,6 +238,11 @@ export const projects: Project[] = [
     copy: "A contract-grounded API testing copilot that turns API specs into scoped, reproducible QA handoffs.",
     problem:
       "API testing often drifts away from the contract: teams need tests grounded in the uploaded OpenAPI or Swagger document and backed by reproducible execution evidence.",
+    role: "Product engineer and GenAI workflow designer",
+    challenge: "Make AI useful without allowing it to invent tests outside the uploaded API contract.",
+    solution: "Scoped test generation to the OpenAPI/Swagger document, executed checks against a live API, and produced markdown evidence.",
+    impact: "Creates a bug-ready handoff for issues, PRs, and QA reports with reproducible execution context.",
+    proofPoints: ["Contract-grounded suite", "Live API execution", "Markdown bug handoff"],
     media: [
       {
         src: "/projects/specpilot-01.jpg",
@@ -263,6 +278,11 @@ export const projects: Project[] = [
     copy: "A one-stop virtual place to handle miniature doubts and make college life more memorable.",
     problem:
       "New college students often have small but persistent doubts that are hard to answer from formal documents or scattered senior advice.",
+    role: "Frontend builder and information architect",
+    challenge: "Organize informal college knowledge into a fast, approachable guide that freshers can actually navigate.",
+    solution: "Designed a lightweight static website with guide sections, campus-oriented storytelling, and simple discovery paths.",
+    impact: "Gave incoming students a low-friction place to resolve common doubts without needing backend infrastructure.",
+    proofPoints: ["GitHub Pages deployment", "Freshers-first content map", "Zero-backend static delivery"],
     media: [
       {
         src: "/projects/freshers-guide-01.jpg",
@@ -299,6 +319,11 @@ export const projects: Project[] = [
       "A Python-based Text2Matra converter built with Prof. Niraj Kumar Singh for poetic structure analysis and research enablement.",
     problem:
       "Scholars working with Indian poetic forms need tooling that can convert text into matra-aware structure, making rhythm and composition easier to analyze at scale.",
+    role: "Research tooling engineer",
+    challenge: "Convert poetic text into structure-aware matra signals while keeping the workflow useful for academic analysis.",
+    solution: "Engineered a Python processing pipeline for Text2Matra conversion and connected it to the Centre of Excellence initiative.",
+    impact: "Processed 10,000+ words and supported academic pursuits for 1,000+ scholars and researchers.",
+    proofPoints: ["10,000+ words processed", "Prof. Niraj Kumar Singh collaboration", "Centre of Excellence Lab"],
     media: [
       {
         src: "/projects/text2mantra-01.jpg",

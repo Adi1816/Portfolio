@@ -28,30 +28,32 @@ export function FooterSection() {
 
       <RevealText className="command-center">
         <div className="command-primary">
-          <div>
-            <span>Primary Channel</span>
-            <strong>{siteProfile.email}</strong>
+          <div className="command-primary-copy">
+            <span>Direct Access</span>
+            <p>{siteProfile.email}</p>
           </div>
-          <button onClick={copyEmail} type="button">
-            {copied ? <Check size={18} /> : <Copy size={18} />}
-            {copied ? "Copied" : "Copy Email"}
-          </button>
-          <a href={`mailto:${siteProfile.email}`}>
-            <Mail size={18} />
-            Open Mail
-          </a>
-          <a href={siteProfile.resumeHref} rel="noreferrer" target="_blank">
-            <FileText size={18} />
-            Resume
-          </a>
+          <div className="command-actions-row">
+            <a className="command-action-primary" href={siteProfile.resumeHref} rel="noreferrer" target="_blank">
+              <FileText size={18} />
+              View Resume
+            </a>
+            <button onClick={copyEmail} type="button">
+              {copied ? <Check size={18} /> : <Copy size={18} />}
+              {copied ? "Copied" : "Copy Email"}
+            </button>
+            <a href={`mailto:${siteProfile.email}`}>
+              <Mail size={18} />
+              Send Email
+            </a>
+          </div>
         </div>
 
         <div className="command-terminal">
-          <span>handshake.protocol</span>
+          <span>contact.protocol</span>
           <p>identity: Aditya Srivastava</p>
           <p>location: {siteProfile.location}</p>
-          <p>status: open to high-signal engineering conversations</p>
-          <p>response: system boot success</p>
+          <p>channel: resume, email, project demos</p>
+          <p>response: direct engineering conversation</p>
         </div>
       </RevealText>
 

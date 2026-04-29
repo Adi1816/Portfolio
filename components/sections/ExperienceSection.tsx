@@ -2,6 +2,33 @@ import { experience } from "@/data/portfolio";
 import { RevealText } from "@/components/primitives/RevealText";
 import { SectionEyebrow } from "@/components/primitives/SectionEyebrow";
 
+function ExperienceMark({ company }: { company: string }) {
+  const key = company.toLowerCase().replace(/[^a-z]/g, "");
+  const logo = key.includes("oracle")
+    ? {
+        src: "/logos/oracle.svg",
+        label: "Oracle logo",
+        className: "oracle-logo"
+      }
+    : key.includes("docusign")
+      ? {
+          src: "/logos/docusign.svg",
+          label: "Docusign logo",
+          className: "docusign-logo"
+        }
+      : {
+          src: "/logos/tle-eliminators.svg",
+          label: "TLE Eliminators logo",
+          className: "tle-logo"
+        };
+
+  return (
+    <div className={`experience-mark ${logo.className}`} aria-label={logo.label}>
+      <img alt="" decoding="async" loading="lazy" src={logo.src} />
+    </div>
+  );
+}
+
 export function ExperienceSection() {
   return (
     <section className="story-section timeline-section" id="timeline">
@@ -28,6 +55,7 @@ export function ExperienceSection() {
               </div>
             </div>
             <aside className="timeline-signal">
+              <ExperienceMark company={item.company} />
               <span>{item.signal}</span>
               <strong>{item.metric}</strong>
             </aside>

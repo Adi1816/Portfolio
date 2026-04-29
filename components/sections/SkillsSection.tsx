@@ -1,7 +1,7 @@
 "use client";
 
 import type { CSSProperties, PointerEvent } from "react";
-import { memo, useCallback, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { competitiveProfiles, skills } from "@/data/portfolio";
 import { RevealText } from "@/components/primitives/RevealText";
 import { SectionEyebrow } from "@/components/primitives/SectionEyebrow";
@@ -16,6 +16,42 @@ type StackOrb = {
   tone: "blue" | "green" | "silver";
   href?: string;
   skillName?: string;
+  logo?: {
+    slug?: string;
+    src?: string;
+    color: string;
+    label: string;
+  };
+};
+
+const LOGOS: Record<string, StackOrb["logo"]> = {
+  "C++": { src: "/logos/cplusplus.svg", color: "00599C", label: "C++ logo" },
+  C: { src: "/logos/c.svg", color: "A8B9CC", label: "C logo" },
+  Python: { src: "/logos/python.svg", color: "3776AB", label: "Python logo" },
+  JavaScript: { src: "/logos/javascript.svg", color: "F7DF1E", label: "JavaScript logo" },
+  TypeScript: { src: "/logos/typescript.svg", color: "3178C6", label: "TypeScript logo" },
+  "React.js": { src: "/logos/react.svg", color: "61DAFB", label: "React logo" },
+  "Next.js": { src: "/logos/nextjs.svg", color: "FFFFFF", label: "Next.js logo" },
+  GSAP: { src: "/logos/gsap.svg", color: "88CE02", label: "GSAP logo" },
+  "Tailwind CSS": { src: "/logos/tailwindcss.svg", color: "06B6D4", label: "Tailwind CSS logo" },
+  "Node.js": { src: "/logos/nodejs.svg", color: "5FA04E", label: "Node.js logo" },
+  "Spring Boot": { src: "/logos/springboot.svg", color: "6DB33F", label: "Spring Boot logo" },
+  PostgreSQL: { src: "/logos/postgresql.svg", color: "4169E1", label: "PostgreSQL logo" },
+  MySQL: { src: "/logos/mysql.svg", color: "4479A1", label: "MySQL logo" },
+  Azure: { src: "/logos/azure.svg", color: "0078D4", label: "Microsoft Azure logo" },
+  Docker: { src: "/logos/docker.svg", color: "2496ED", label: "Docker logo" },
+  Kubernetes: { src: "/logos/kubernetes.svg", color: "326CE5", label: "Kubernetes logo" },
+  Git: { src: "/logos/git.svg", color: "F05032", label: "Git logo" },
+  GitHub: { src: "/logos/github.svg", color: "FFFFFF", label: "GitHub logo" },
+  GitLab: { src: "/logos/gitlab.svg", color: "FC6D26", label: "GitLab logo" },
+  Codeforces: { src: "/logos/codeforces.svg", color: "1F8ACB", label: "Codeforces logo" },
+  LeetCode: { src: "/logos/leetcode.svg", color: "FFA116", label: "LeetCode logo" },
+  AtCoder: { src: "/logos/atcoder.png", color: "FFFFFF", label: "AtCoder logo" },
+  CodeChef: { src: "/logos/codechef.svg", color: "5B4638", label: "CodeChef logo" },
+  OS: { color: "00FF41", label: "Operating Systems symbol" },
+  DBMS: { color: "0072C6", label: "Database Systems symbol" },
+  OOP: { color: "00FF41", label: "Object-Oriented Programming symbol" },
+  Networks: { color: "F3F7FF", label: "Computer Networks symbol" }
 };
 
 function buildStackOrbs(): StackOrb[] {
@@ -28,7 +64,8 @@ function buildStackOrbs(): StackOrb[] {
       meta: skill.level,
       detail: skill.log,
       tone: skill.tone,
-      skillName: skill.name
+      skillName: skill.name,
+      logo: LOGOS[skill.name]
     })),
     ...competitiveProfiles.map((profile, index) => ({
       id: `profile-${profile.platform}`,
@@ -38,12 +75,47 @@ function buildStackOrbs(): StackOrb[] {
       meta: `${profile.tier} / ${profile.rating}`,
       detail: `${profile.handle} is Aditya's ${profile.platform} profile, showing a ${profile.tier.toLowerCase()} level competitive programming signal.`,
       tone: (index % 3 === 0 ? "green" : index % 3 === 1 ? "blue" : "silver") as StackOrb["tone"],
-      href: profile.href
+      href: profile.href,
+      logo: LOGOS[profile.platform]
     }))
   ];
 }
 
 const STACK_ORBS = buildStackOrbs();
+
+function StackReadoutLogo({ item }: { item: StackOrb }) {
+  const [hasLogoError, setHasLogoError] = useState(false);
+  const logo = item.logo;
+  const logoSrc = logo?.src ?? null;
+  const initials = item.title
+    .split(/\s|\./)
+    .filter(Boolean)
+    .map((word) => word[0])
+    .join("")
+    .slice(0, 3)
+    .toUpperCase();
+  const logoStyle = { "--logo-color": `#${logo?.color ?? "f6f8fb"}` } as CSSProperties;
+
+  useEffect(() => {
+    setHasLogoError(false);
+  }, [item.id, logoSrc]);
+
+  return (
+    <div className={`readout-logo ${item.tone}`} aria-label={logo?.label ?? `${item.title} symbol`} style={logoStyle}>
+      {logoSrc && !hasLogoError ? (
+        <img
+          key={logoSrc}
+          alt=""
+          decoding="async"
+          loading="lazy"
+          onError={() => setHasLogoError(true)}
+          src={logoSrc}
+        />
+      ) : null}
+      <span className={logoSrc && !hasLogoError ? "logo-fallback hidden" : "logo-fallback"}>{initials}</span>
+    </div>
+  );
+}
 
 const StackOrbButton = memo(function StackOrbButton({
   item,
@@ -69,34 +141,10 @@ const StackOrbButton = memo(function StackOrbButton({
     "--orb-depth": `${depth}`
   } as CSSProperties;
 
-  const content = (
-    <>
-      <span>{item.label}</span>
-      <i>{item.category}</i>
-    </>
-  );
-
-  if (item.href) {
-    return (
-      <a
-        className={isHighlighted ? `stack-orb ${item.tone} active` : `stack-orb ${item.tone}`}
-        href={item.href}
-        onBlur={onDeactivate}
-        onFocus={() => onActivate(item)}
-        onPointerEnter={() => onActivate(item)}
-        onPointerLeave={onDeactivate}
-        rel="noreferrer"
-        style={style}
-        target="_blank"
-      >
-        {content}
-      </a>
-    );
-  }
-
   return (
     <button
       className={isHighlighted ? `stack-orb ${item.tone} active` : `stack-orb ${item.tone}`}
+      aria-label={`Inspect ${item.label}`}
       onBlur={onDeactivate}
       onFocus={() => onActivate(item)}
       onPointerEnter={() => onActivate(item)}
@@ -105,7 +153,8 @@ const StackOrbButton = memo(function StackOrbButton({
       style={style}
       type="button"
     >
-      {content}
+      <span>{item.label}</span>
+      <i>{item.category}</i>
     </button>
   );
 });
@@ -119,6 +168,16 @@ export function SkillsSection({
   const [activeItem, setActiveItem] = useState<StackOrb>(STACK_ORBS[0]);
   const [highlightedItemId, setHighlightedItemId] = useState<string | null>(null);
   const [readoutTilt, setReadoutTilt] = useState({ x: 0, y: 0 });
+  const activeStats = useMemo(() => {
+    const detailLength = Math.min(96, Math.max(34, activeItem.detail.length));
+    const labelWeight = Math.min(100, Math.max(42, activeItem.label.replace(/[^a-z0-9]/gi, "").length * 9));
+
+    return [
+      { label: "Layer", value: activeItem.category.split(" ")[0] },
+      { label: "Signal", value: activeItem.meta },
+      { label: "Index", value: `${Math.round((detailLength + labelWeight) / 2)}` }
+    ];
+  }, [activeItem]);
 
   const activate = useCallback((item: StackOrb) => {
     setActiveItem(item);
@@ -168,17 +227,30 @@ export function SkillsSection({
         </div>
 
         <div
-          className="stack-readout"
+          className={`stack-readout ${activeItem.tone}`}
           aria-live="polite"
           onPointerLeave={() => setReadoutTilt({ x: 0, y: 0 })}
           onPointerMove={tiltReadout}
           style={{ "--readout-rotate-x": `${readoutTilt.x}deg`, "--readout-rotate-y": `${readoutTilt.y}deg` } as CSSProperties}
         >
-          <span>{activeItem.category}</span>
+          <StackReadoutLogo item={activeItem} />
+          <div className="readout-kicker">
+            <span>{activeItem.category}</span>
+            <i>Live node inspection</i>
+          </div>
           <h3>{activeItem.title}</h3>
           <strong>{activeItem.meta}</strong>
           <p>{activeItem.detail}</p>
-          <div className="readout-lines" aria-hidden="true">
+          <div className="readout-metric-grid" aria-label={`${activeItem.title} signal metrics`}>
+            {activeStats.map((stat) => (
+              <div key={stat.label}>
+                <span>{stat.label}</span>
+                <strong>{stat.value}</strong>
+              </div>
+            ))}
+          </div>
+          <div className="readout-spectrum" aria-hidden="true">
+            <i />
             <i />
             <i />
             <i />

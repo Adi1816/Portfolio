@@ -5,7 +5,7 @@ export function BlueprintOverlay({ progress }: { progress: number }) {
 
   return (
     <div className="blueprint-overlay" aria-hidden="true">
-      <div className="blueprint-label top-left">
+      <div className={activeStage.id === "hero" ? "blueprint-label top-left hero-initialization" : "blueprint-label top-left"}>
         <span>CORE / {activeStage.label}</span>
         <strong>{activeStage.log}</strong>
       </div>

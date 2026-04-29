@@ -16,13 +16,15 @@ export function AboutSection() {
       </RevealText>
       <RevealText className="engine-marquee-shell">
         <div className="engine-marquee" aria-label="Education and foundation highlights">
-          {[0, 1].map((loop) => (
-            <div className="engine-marquee-track" aria-hidden={loop === 1} key={loop}>
-              {engineSignals.map((signal) => (
-                <span key={`${loop}-${signal}`}>{signal}</span>
-              ))}
-            </div>
-          ))}
+          <div className="engine-marquee-track">
+            {[0, 1].map((loop) =>
+              engineSignals.map((signal) => (
+                <span aria-hidden={loop === 1} key={`${loop}-${signal}`}>
+                  {signal}
+                </span>
+              ))
+            )}
+          </div>
         </div>
       </RevealText>
     </section>

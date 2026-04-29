@@ -63,16 +63,21 @@ export function PortfolioExperience() {
   const cursorAuraRef = useRef<HTMLDivElement>(null);
   const [isSceneReady, setIsSceneReady] = useState(false);
   const [hoveredSkill, setHoveredSkill] = useState<string | null>(null);
-  const stackSceneFocus = progress >= 0.315 && progress < 0.535;
-  const showcaseSceneFocus = progress >= 0.695 && progress < 0.84;
+  const stackSceneFocus = progress >= 0.315 && progress < 0.455;
+  const timelineWarmup = progress >= 0.525 && progress < 0.61;
+  const showcaseSceneFocus = progress >= 0.665 && progress < 0.84;
   const sceneIsClear = stackSceneFocus || showcaseSceneFocus;
-  const sceneIsPeeking = (progress >= 0.27 && progress < 0.315) || (progress >= 0.66 && progress < 0.695);
+  const sceneIsPeeking =
+    (progress >= 0.27 && progress < 0.315) ||
+    (progress >= 0.455 && progress < 0.465) ||
+    timelineWarmup ||
+    (progress >= 0.635 && progress < 0.665);
   const progressStyle = useMemo(
     () =>
       ({
-        "--scene-blur": sceneIsClear ? "0px" : sceneIsPeeking ? "1.1px" : "2.4px",
-        "--scene-opacity": sceneIsClear ? 0.94 : sceneIsPeeking ? 0.68 : 0.48,
-        "--scene-saturate": sceneIsClear ? 1.08 : sceneIsPeeking ? 0.94 : 0.76
+        "--scene-blur": sceneIsClear ? "0px" : sceneIsPeeking ? "2.4px" : "5px",
+        "--scene-opacity": sceneIsClear ? 0.9 : sceneIsPeeking ? 0.46 : 0.3,
+        "--scene-saturate": sceneIsClear ? 1.08 : sceneIsPeeking ? 0.86 : 0.64
       }) as React.CSSProperties,
     [sceneIsClear, sceneIsPeeking]
   );

@@ -13,25 +13,19 @@ type CoreSceneProps = {
 };
 
 const SCENE_STACK_LABELS = [
-  { name: "C++", tone: "silver" },
-  { name: "Python", tone: "blue" },
-  { name: "TypeScript", tone: "silver" },
-  { name: "React.js", tone: "blue" },
-  { name: "Next.js", tone: "silver" },
-  { name: "Node.js", tone: "green" },
-  { name: "Spring Boot", tone: "green" },
-  { name: "PostgreSQL", tone: "blue" },
-  { name: "Docker", tone: "green" },
-  { name: "Kubernetes", tone: "blue" },
-  { name: "Codeforces", tone: "green" },
-  { name: "LeetCode", tone: "blue" }
+  { name: "C++", color: "#6aa7ff" },
+  { name: "Python", color: "#ffd95a" },
+  { name: "TypeScript", color: "#3178c6" },
+  { name: "React.js", color: "#61dafb" },
+  { name: "Next.js", color: "#f3f7ff" },
+  { name: "Node.js", color: "#5fa04e" },
+  { name: "Spring Boot", color: "#6db33f" },
+  { name: "PostgreSQL", color: "#4169e1" },
+  { name: "Docker", color: "#2496ed" },
+  { name: "Kubernetes", color: "#326ce5" },
+  { name: "Codeforces", color: "#ff5c8a" },
+  { name: "LeetCode", color: "#ffa116" }
 ] as const;
-
-function stackColor(tone: (typeof SCENE_STACK_LABELS)[number]["tone"]) {
-  if (tone === "green") return "#00ff41";
-  if (tone === "blue") return "#0072c6";
-  return "#f3f7ff";
-}
 
 function createStackLabelTexture(label: string) {
   const canvas = document.createElement("canvas");
@@ -47,8 +41,12 @@ function createStackLabelTexture(label: string) {
     context.font = "800 30px Inter, -apple-system, BlinkMacSystemFont, sans-serif";
     context.textAlign = "center";
     context.textBaseline = "middle";
-    context.shadowColor = "rgba(0, 114, 198, 0.72)";
-    context.shadowBlur = 10;
+    context.shadowColor = "rgba(0, 255, 65, 0.4)";
+    context.shadowBlur = 22;
+    context.fillStyle = "rgba(0, 255, 65, 0.2)";
+    context.fillText(label, width / 2, height / 2);
+    context.shadowColor = "rgba(0, 114, 198, 0.82)";
+    context.shadowBlur = 14;
     context.lineWidth = 5;
     context.strokeStyle = "rgba(3, 3, 3, 0.96)";
     context.strokeText(label, width / 2, height / 2);
@@ -207,11 +205,27 @@ function CoreShell({
       </mesh>
       <mesh ref={ringA} scale={[1.62 + explode * 0.7, 1.62 + explode * 0.7, 0.02]}>
         <torusGeometry args={[1, 0.01, 16, 180]} />
-        <meshStandardMaterial color="#aee1ff" emissive="#0072c6" emissiveIntensity={1.8 * bloom} metalness={0.8} roughness={0.18} />
+        <meshStandardMaterial
+          color="#d7f2ff"
+          emissive="#0072c6"
+          emissiveIntensity={2.35 * bloom}
+          metalness={0.78}
+          roughness={0.14}
+          transparent
+          opacity={0.94}
+        />
       </mesh>
       <mesh ref={ringB} scale={[1.9 + explode * 0.45, 1.9 + explode * 0.45, 0.02]}>
         <torusGeometry args={[1, 0.006, 16, 180]} />
-        <meshStandardMaterial color="#b9ffcc" emissive="#00ff41" emissiveIntensity={0.9 * bloom} metalness={0.9} roughness={0.12} />
+        <meshStandardMaterial
+          color="#d7ffe0"
+          emissive="#00ff41"
+          emissiveIntensity={1.35 * bloom}
+          metalness={0.86}
+          roughness={0.1}
+          transparent
+          opacity={0.9}
+        />
       </mesh>
       {chips.map((index) => {
         const angle = (index / chips.length) * Math.PI * 2;
@@ -266,16 +280,20 @@ function OrbitingSkills({ progress, hoveredSkill, isActive }: CoreSceneProps) {
           <group key={skill.name} position={[Math.cos(angle) * radius, Math.sin(index) * 0.54, Math.sin(angle) * radius]}>
             <mesh>
               <sphereGeometry args={[0.096, 12, 12]} />
-              <meshStandardMaterial
-                color={stackColor(skill.tone)}
-                emissive={skill.tone === "green" ? "#00ff41" : "#0072c6"}
-                emissiveIntensity={glow}
-                metalness={0.5}
-                roughness={0.18}
-              />
+              <meshStandardMaterial color={skill.color} emissive={skill.color} emissiveIntensity={glow} metalness={0.5} roughness={0.18} />
             </mesh>
             <sprite position={[0, -0.31, 0]} scale={[labelWidth, 0.24, 1]}>
-              <spriteMaterial map={skill.texture} transparent depthWrite={false} opacity={0.92} />
+              <spriteMaterial
+                map={skill.texture}
+                transparent
+                depthWrite={false}
+                depthTest={false}
+                blending={THREE.AdditiveBlending}
+                opacity={hoveredSkill === skill.name ? 0.34 : 0.18}
+              />
+            </sprite>
+            <sprite position={[0, -0.31, 0.01]} scale={[labelWidth, 0.24, 1]}>
+              <spriteMaterial map={skill.texture} transparent depthWrite={false} opacity={hoveredSkill === skill.name ? 1 : 0.92} />
             </sprite>
           </group>
         );
@@ -339,12 +357,37 @@ function BlueprintRings({ progress }: { progress: number }) {
 
   return (
     <group ref={group}>
-      {[2.7, 3.2, 3.75].map((radius, index) => (
-        <mesh key={radius} rotation={[Math.PI / 2, 0, index * 0.2]} scale={[radius, radius, 0.01]}>
-          <torusGeometry args={[1, 0.0025, 8, 160]} />
-          <meshBasicMaterial color={index === 1 ? "#00ff41" : "#0072c6"} transparent opacity={pulse / (index + 1.3)} />
-        </mesh>
-      ))}
+      {[2.7, 3.2, 3.75].map((radius, index) => {
+        const color = index === 1 ? "#00ff41" : "#0072c6";
+        const opacity = pulse / (index + 1.3);
+
+        return (
+          <group key={radius} rotation={[Math.PI / 2, 0, index * 0.2]} scale={[radius, radius, 0.01]}>
+            <mesh>
+              <torusGeometry args={[1, 0.0025, 8, 160]} />
+              <meshBasicMaterial
+                color={color}
+                transparent
+                depthWrite={false}
+                blending={THREE.AdditiveBlending}
+                opacity={opacity}
+                toneMapped={false}
+              />
+            </mesh>
+            <mesh scale={[1.004, 1.004, 1]}>
+              <torusGeometry args={[1, 0.009, 8, 160]} />
+              <meshBasicMaterial
+                color={color}
+                transparent
+                depthWrite={false}
+                blending={THREE.AdditiveBlending}
+                opacity={opacity * 0.22}
+                toneMapped={false}
+              />
+            </mesh>
+          </group>
+        );
+      })}
     </group>
   );
 }
