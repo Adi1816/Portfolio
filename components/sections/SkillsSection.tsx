@@ -175,7 +175,7 @@ export function SkillsSection({
     return [
       { label: "Layer", value: activeItem.category.split(" ")[0] },
       { label: "Signal", value: activeItem.meta },
-      { label: "Index", value: `${Math.round((detailLength + labelWeight) / 2)}` }
+      { label: "Effect", value: "Tilt" }
     ];
   }, [activeItem]);
 

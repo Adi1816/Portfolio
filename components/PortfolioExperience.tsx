@@ -64,14 +64,10 @@ export function PortfolioExperience() {
   const [isSceneReady, setIsSceneReady] = useState(false);
   const [hoveredSkill, setHoveredSkill] = useState<string | null>(null);
   const stackSceneFocus = progress >= 0.315 && progress < 0.455;
-  const timelineWarmup = progress >= 0.525 && progress < 0.61;
-  const showcaseSceneFocus = progress >= 0.665 && progress < 0.84;
-  const sceneIsClear = stackSceneFocus || showcaseSceneFocus;
+  const sceneIsClear = stackSceneFocus;
   const sceneIsPeeking =
     (progress >= 0.27 && progress < 0.315) ||
-    (progress >= 0.455 && progress < 0.465) ||
-    timelineWarmup ||
-    (progress >= 0.635 && progress < 0.665);
+    (progress >= 0.455 && progress < 0.465);
   const progressStyle = useMemo(
     () =>
       ({
@@ -94,7 +90,7 @@ export function PortfolioExperience() {
     const isCompact = window.matchMedia("(max-width: 760px), (pointer: coarse)").matches;
     const scrollDepth = window.scrollY / Math.max(window.innerHeight, 1);
     const shouldPreloadMobileScene = isCompact && scrollDepth >= 0.9;
-    const shouldMountMobileScene = isCompact && (scrollDepth >= 1.25 || showcaseSceneFocus);
+    const shouldMountMobileScene = isCompact && scrollDepth >= 1.25;
     const shouldMountDesktopScene = !isCompact;
 
     if (shouldPreloadMobileScene) {
@@ -116,7 +112,7 @@ export function PortfolioExperience() {
       window.clearTimeout(timer);
       cleanupIdle?.();
     };
-  }, [isSceneReady, progress, reduceMotion, showcaseSceneFocus]);
+  }, [isSceneReady, progress, reduceMotion]);
 
   useEffect(() => {
     const aura = cursorAuraRef.current;
